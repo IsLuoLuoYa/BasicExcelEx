@@ -27,7 +27,7 @@ BasicExcelCell从的字符串成员，从char和wchar改成了string和wsting
         
  BasicExcelWorksheet增加了以下代码，用于从Excel按行按字段获取数据
 ```c++
-typedef unordered_map<string, const BasicExcelCell*> BasicExcelRowData;private:
+typedef unordered_map<string, const BasicExcelCell*> BasicExcelRowData;
 private:
     int m_Row_Start = 0;
     int m_Row_End = 0;
