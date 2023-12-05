@@ -1172,7 +1172,12 @@ public:
 	vector<BasicExcelWorksheet> yesheets_;	///< Parsed Worksheets.
 };
 
-typedef unordered_map<string, const BasicExcelCell*> BasicExcelRowData;
+struct BasicExcelRowData
+{
+	unordered_map<string, const BasicExcelCell*> Data;
+	bool HasField(string Field) const;
+	const BasicExcelCell* GetCellByField(string Field) const;
+};
 class BasicExcelWorksheet
 {
 	friend class BasicExcel;
@@ -1216,7 +1221,7 @@ private:
 	bool DealCustomData(int DataStartRow = 2, int DataStartCol = 0);			// 默认第0行是字段名,第1行是说明解释,第二行开始是真正的数据, 要在UpdateCells后调用
 	BasicExcelRowData GetRowData_Point(int Row);								// 返回<key字段名, 该行该字段名对应的数据>		返回原始数据指针
 public:
-	void VisitAllRow(function<bool(int, const BasicExcelRowData&)> Func);	// 遍历所有行,返回true继续遍历下一行,返回false停止  参数1：行数   参数2：<字段名， 数据>
+	bool VisitAllRow(function<bool(int, const BasicExcelRowData&)> Func);	// 遍历所有行,返回true继续遍历下一行,返回false停止  参数1：行数   参数2：<字段名， 数据>
 
 };
 

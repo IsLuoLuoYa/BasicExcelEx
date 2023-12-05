@@ -4651,18 +4651,18 @@ BasicExcelWorksheet* BasicExcel::GetWorksheet(size_t sheetIndex)
 BasicExcelWorksheet* BasicExcel::GetWorksheet(const char* name)
 {
 	size_t maxWorksheets = yesheets_.size();
-	for (size_t i=0; i<maxWorksheets; ++i)
+	for (size_t i = 0; i < maxWorksheets; ++i)
 	{
-		if (workbook_.boundSheets_[i].name_.unicode_ & 1) 
-        {
-            size_t len = strlen(name);
-            wstring wsName(len + 1, 0);
-            mbstowcs(&wsName[0], name, len);
-            if (wcsncmp(&wsName[0], workbook_.boundSheets_[i].name_.wname_, wcslen(&wsName[0])) == 0) return &(yesheets_[i]);
-        } else {
-		    if (strcmp(name, workbook_.boundSheets_[i].name_.name_) == 0) return &(yesheets_[i]);
-        }
-    }
+		if (workbook_.boundSheets_[i].name_.unicode_ & 1)
+		{
+			size_t len = strlen(name);
+			wstring wsName = BssicExcelUti::s2ws(name);
+			if (wcsncmp(&wsName[0], workbook_.boundSheets_[i].name_.wname_, wcslen(&wsName[0])) == 0) return &(yesheets_[i]);
+		}
+		else {
+			if (strcmp(name, workbook_.boundSheets_[i].name_.name_) == 0) return &(yesheets_[i]);
+		}
+	}
 
 
 	return 0;
@@ -5823,15 +5823,29 @@ BasicExcelRowData BasicExcelWorksheet::GetRowData_Point(int Row)
 	return Ret;
 }
 
-void BasicExcelWorksheet::VisitAllRow(function<bool(int, const BasicExcelRowData&)> Func)
+bool BasicExcelWorksheet::VisitAllRow(function<bool(int, const BasicExcelRowData&)> Func)
 {
 	for (int Row = m_Row_Start; Row <= m_Row_End; ++Row)
 	{
 		BasicExcelRowData RowData = GetRowData_Point(Row);
 		bool IsContinue = Func(Row, RowData);
 		if (!IsContinue)
-			break;
+			return false;
 	}
+	return true;
+}
+
+bool BasicExcelRowData::HasField(string Field) const
+{
+	return Data.find(Field) != Data.end();
+}
+
+const BasicExcelCell* BasicExcelRowData::GetCellByField(string Field) const
+{
+	auto it = Data.find(Field);
+	if (it != Data.end())
+		return it->second;
+	return nullptr;
 }
 
 /************************************************************************************************************/
