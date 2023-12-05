@@ -5924,6 +5924,16 @@ size_t BasicExcelCell::GetStringLength() const
 	else return ValWStr_.size() - 1;
 }
 
+int8_t BasicExcelCell::GetInt8() const
+{
+	return (int8_t)ValInt32_;
+}
+
+int16_t BasicExcelCell::GetInt16() const
+{
+	return (int16_t)ValInt32_;
+}
+
 // Get an integer value.
 // Returns 0 if cell does not contain an integer.
 int BasicExcelCell::GetInt32() const

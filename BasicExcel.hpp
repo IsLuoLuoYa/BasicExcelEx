@@ -1240,6 +1240,8 @@ public:
 	bool Get(wchar_t* str) const;	///< Get an Unicode string. Returns false if cell does not contain an Unicode string.
 	size_t GetStringLength() const;	///< Return length of ANSI or Unicode string (excluding null character).
 
+	int8_t GetInt8() const;
+	int16_t GetInt16() const;
 	int GetInt32() const;		///< Get an integer value. Returns 0 if cell does not contain an integer.
 	int64_t GetInt64() const;
 	double GetDouble() const;		///< Get a double value. Returns 0.0 if cell does not contain a double.
