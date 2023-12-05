@@ -27,7 +27,14 @@ BasicExcelCell从的字符串成员，从char和wchar改成了string和wsting
         
  BasicExcelWorksheet增加了以下代码，用于从Excel按行按字段获取数据
 ```c++
-typedef unordered_map<string, const BasicExcelCell*> BasicExcelRowData;
+struct BasicExcelRowData
+{
+	unordered_map<string, const BasicExcelCell*> Data;
+	bool HasField(string Field) const;
+	const BasicExcelCell* GetCellByField(string Field) const;
+};
+class BasicExcelWorksheet
+{
 private:
     int m_Row_Start = 0;
     int m_Row_End = 0;
@@ -38,6 +45,7 @@ private:
     BasicExcelRowData GetRowData_Point(int Row);			    // 返回<key字段名, 该行该字段名对应的数据>		返回原始数据指针
 public:
     void VisitAllRow(function<bool(int, const BasicExcelRowData&)> Func);    // 遍历所有行,返回true继续遍历下一行,返回false停止  参数1：行数   参数2：<字段名， 数据>
+}
 ```
 # 例子
 Id     | Type | Max| Con| OpenDay
