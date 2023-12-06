@@ -5818,7 +5818,7 @@ BasicExcelRowData BasicExcelWorksheet::GetRowData_Point(int Row)
 	BasicExcelRowData Ret;
 
 	for (auto& it : FieldToCol)
-		Ret[it.first] = Cell(Row, it.second);
+		Ret.Data[it.first] = Cell(Row, it.second);
 
 	return Ret;
 }
