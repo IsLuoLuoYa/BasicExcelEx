@@ -1174,6 +1174,7 @@ public:
 
 struct BasicExcelRowData
 {
+	map<int, string>* ColToField = nullptr;
 	unordered_map<string, const BasicExcelCell*> Data;
 	bool HasField(string Field) const;
 	const BasicExcelCell* GetCellByField(string Field) const;
@@ -1217,6 +1218,7 @@ private:
 	int m_Row_End = 0;
 	int m_Col_Start = 0;
 	int m_Col_End = 0;
+	map<int, string> ColToField;			// <第几列,	字段名>
 	unordered_map<string, int> FieldToCol;	// <字段名, 在第几列>
 	bool DealCustomData(int DataStartRow = 2, int DataStartCol = 0);			// 默认第0行是字段名,第1行是说明解释,第二行开始是真正的数据, 要在UpdateCells后调用
 	BasicExcelRowData GetRowData_Point(int Row);								// 返回<key字段名, 该行该字段名对应的数据>		返回原始数据指针

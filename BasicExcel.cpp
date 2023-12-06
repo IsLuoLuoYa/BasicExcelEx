@@ -5816,8 +5816,11 @@ bool BasicExcelWorksheet::DealCustomData(int DataStartRow, int DataStartCol)
 		return false;
 
 	for (size_t TmpCol = 0; TmpCol <= m_Col_End; ++TmpCol)
-		FieldToCol[string(Cell(0, TmpCol)->GetString())] = TmpCol;
-
+	{
+		string T = Cell(0, TmpCol)->GetString();
+		FieldToCol[T] = TmpCol;
+		ColToField[TmpCol] = T;
+	}
 	return true;
 }
 
@@ -5827,7 +5830,7 @@ BasicExcelRowData BasicExcelWorksheet::GetRowData_Point(int Row)
 
 	for (auto& it : FieldToCol)
 		Ret.Data[it.first] = Cell(Row, it.second);
-
+	Ret.ColToField = &ColToField;
 	return Ret;
 }
 
