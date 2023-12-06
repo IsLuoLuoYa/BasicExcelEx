@@ -1,5 +1,4 @@
 #include "BasicExcel.hpp"
-#include <string.h>
 
 
 namespace BssicExcelUti
@@ -8,7 +7,11 @@ namespace BssicExcelUti
 	{
 		string curLocale = setlocale(LC_ALL, NULL); // curLocale = "C";
 
+#ifdef _WIN32
 		setlocale(LC_ALL, "chs");
+#elif __linux__
+		setlocale(LC_ALL, "zh_CN.utf8");
+#endif
 
 		const wchar_t* _Source = ws.c_str();
 		size_t _Dsize = 2 * ws.size() + 1;
@@ -25,8 +28,11 @@ namespace BssicExcelUti
 
 	wstring s2ws(const string& s)
 	{
+#ifdef _WIN32
 		setlocale(LC_ALL, "chs");
-
+#elif __linux__
+		setlocale(LC_ALL, "zh_CN.utf8");
+#endif
 		const char* _Source = s.c_str();
 		size_t _Dsize = s.size() + 1;
 		wchar_t* _Dest = new wchar_t[_Dsize];
