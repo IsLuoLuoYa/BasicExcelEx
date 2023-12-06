@@ -1,4 +1,5 @@
 #include "BasicExcel.hpp"
+#include <string.h>
 
 
 namespace BssicExcelUti
