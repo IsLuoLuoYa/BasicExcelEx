@@ -5792,7 +5792,7 @@ bool BasicExcelWorksheet::DealCustomData(int DataStartRow, int DataStartCol)
 	m_Row_Start = DataStartRow;
 	m_Col_Start = DataStartCol;
 
-	for (size_t TmpRow = 0; TmpRow < maxRows_; ++TmpRow)
+	for (size_t TmpRow = m_Row_Start; TmpRow < maxRows_; ++TmpRow)
 	{
 		string Tmpdata(Cell(TmpRow, 0)->GetString());
 		if (!Tmpdata.empty())
