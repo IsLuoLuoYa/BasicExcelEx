@@ -6030,8 +6030,12 @@ void BasicExcelCell::SetDouble(double val)
 	ValInt32_ = val;
 	ValInt64_ = val;
 	ValDouble_ = val;
-	VarStr_ = to_string(ValInt64_);
-	ValWStr_ = to_wstring(ValInt64_);
+
+	ostringstream T;
+	T << val;;
+	VarStr_ = T.str();
+
+	ValWStr_ = BssicExcelUti::s2ws(VarStr_);
 }
 
 // Set content of current Excel cell to an ANSI string.
