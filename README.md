@@ -6,6 +6,8 @@ BasicExcel本身不支持.xlsx文件，需要另存为.xls
 
 同时也不支持超过65535行和255列
 
+用中文的页签名某些情况下会转换成空字符,导致打开失败
+
 # 修改内容
 bool BasicExcel::Load(const char* filename, bool IsOnlyRead = false);
     
