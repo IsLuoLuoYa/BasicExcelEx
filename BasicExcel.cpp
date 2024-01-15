@@ -4441,19 +4441,19 @@ size_t Worksheet::Window2::Write(char* data)
 
 /************************************************************************************************************/
 // Returns true if the supplied rk value contains an integer.
-bool IsRKValueAnInteger(int rkValue)
+bool IsRKValueAnInteger(int64_t rkValue)
 {
 	return (rkValue & 2);
 }
 
 // Returns true if the supplied rk value contains a double.
-bool IsRKValueADouble(int rkValue)
+bool IsRKValueADouble(int64_t rkValue)
 {
 	return !(rkValue & 2);
 }
 
 // Convert a rk value to a double.
-double GetDoubleFromRKValue(int rkValue)
+double GetDoubleFromRKValue(int64_t rkValue)
 {
 	union 
 	{
@@ -4470,7 +4470,7 @@ double GetDoubleFromRKValue(int rkValue)
 }
 
 // Convert a rk value to an integer.
-int GetIntegerFromRKValue(int rkValue)
+int64_t GetIntegerFromRKValue(int64_t rkValue)
 {
 	bool isMultiplied = rkValue & 1;
 	rkValue >>= 2;
@@ -4507,7 +4507,7 @@ int GetRKValueFromDouble(double value)
 }
 
 // Convert an integer to a rk value.
-int GetRKValueFromInteger(int value)
+int64_t GetRKValueFromInteger(int64_t value)
 {
 	value <<= 2;
 	value |= 2;
@@ -5336,6 +5336,46 @@ void BasicExcel::UpdateWorksheets()
 							break;
 						}
 
+
+						case BasicExcelCell::INT64:
+						{
+							// Check whether it is a single cell or range of cells.
+							size_t cl = c + 1;
+							for (; cl < maxCols; ++cl)
+							{
+								BasicExcelCell* cellNext = yesheets_[s].Cell(r, cl);
+								if (cellNext->Type() == BasicExcelCell::UNDEFINED ||
+									cellNext->Type() != cell->Type()) break;
+							}
+
+							if (cl > c + 1)
+							{
+								// MULRK cells
+								pCell->type_ = CODE::MULRK;
+								pCell->normalType_ = true;
+								pCell->mulrk_.rowIndex_ = r;
+								pCell->mulrk_.firstColIndex_ = c;
+								pCell->mulrk_.lastColIndex_ = cl - 1;
+								pCell->mulrk_.XFRK_.resize(cl - c);
+								for (size_t i = 0; c < cl; ++c, ++i)
+								{
+									cell = yesheets_[s].Cell(r, c);
+									pCell->mulrk_.XFRK_[i].RKValue_ = GetRKValueFromInteger(cell->GetInt64());
+								}
+								--c;
+							}
+							else
+							{
+								// Single cell
+								pCell->normalType_ = true;
+								pCell->type_ = CODE::RK;
+								pCell->rk_.rowIndex_ = r;
+								pCell->rk_.colIndex_ = c;
+								pCell->rk_.value_ = GetRKValueFromInteger(cell->GetInt64());
+							}
+							break;
+						}
+
 						case BasicExcelCell::DOUBLE:
 						{
 							// Check whether it is a single cell or range of cells.
@@ -5592,6 +5632,10 @@ void BasicExcelWorksheet::Print(ostream& os, char delimiter, char textQualifier)
 					os << cell->GetInt32();
 					break;
 
+				case BasicExcelCell::INT64:
+					os << cell->GetInt64();
+					break;
+
 				case BasicExcelCell::DOUBLE:
 					os << setprecision(15) << cell->GetDouble();
 					break;
@@ -5768,7 +5812,7 @@ void BasicExcelWorksheet::UpdateCells()
 
 				case CODE::RK:
 				{
-					int rkValue = rCellBlocks[j].rk_.value_;
+					int64_t rkValue = rCellBlocks[j].rk_.value_;
 					if (IsRKValueAnInteger(rkValue))
 					{
 						cells_[row][col].Set(GetIntegerFromRKValue(rkValue));
@@ -5870,7 +5914,7 @@ int BasicExcelCell::Type() const {return type_;}
 
 // Get an integer value.
 // Returns false if cell does not contain an integer or a double.
-bool BasicExcelCell::Get(int& val) const 
+bool BasicExcelCell::Get(int64_t& val) const
 {
 	if (type_ == INT32)
 	{
@@ -5880,6 +5924,11 @@ bool BasicExcelCell::Get(int& val) const
 	else if (type_ == DOUBLE)
 	{
 		val = (int)ValDouble_;
+		return true;
+	}
+	else if (type_ == INT64)
+	{
+		val = ValInt64_;
 		return true;
 	}
 	else return false;
@@ -5898,6 +5947,11 @@ bool BasicExcelCell::Get(double& val) const
 	{
 			val = (double)ValInt32_;
 			return true;
+	}
+	else if (type_ == INT64)
+	{
+		val = (double)ValInt64_;
+		return true;
 	}
 	else return false;
 }
@@ -5984,6 +6038,11 @@ void BasicExcelCell::Set(int val)
 	SetInt32(val);
 }
 
+void BasicExcelCell::Set(int64_t val)
+{
+	SetInt64(val);
+}
+
 // Set content of current Excel cell to a double.
 void BasicExcelCell::Set(double val) 
 {
@@ -6031,9 +6090,7 @@ void BasicExcelCell::SetDouble(double val)
 	ValInt64_ = val;
 	ValDouble_ = val;
 
-	ostringstream T;
-	T << val;;
-	VarStr_ = T.str();
+	VarStr_ = to_string(val).c_str();
 
 	ValWStr_ = BssicExcelUti::s2ws(VarStr_);
 }
@@ -6109,6 +6166,10 @@ ostream& operator<<(ostream& os, const BasicExcelCell& cell)
 
 		case BasicExcelCell::INT32:
 			os << cell.GetInt32();
+			break;
+
+		case BasicExcelCell::INT64:
+			os << cell.GetInt64();
 			break;
 
 		case BasicExcelCell::DOUBLE:

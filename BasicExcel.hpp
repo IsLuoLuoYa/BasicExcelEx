@@ -66,6 +66,13 @@ using namespace std;
 	#define SIZEOFWCHAR_T sizeof(wchar_t)
 #endif
 
+namespace BssicExcelUti
+{
+	string ws2s(const wstring& ws);
+
+	wstring s2ws(const string& s);
+}
+
 namespace YCompoundFiles
 {
 class Block
@@ -882,7 +889,7 @@ public:
 						void Read(const char* data);
 						void Write(char* data);
 						short XFRecordIndex_;
-						int RKValue_;
+						int64_t RKValue_;
 					};
 					short rowIndex_;
 					short firstColIndex_;
@@ -914,7 +921,7 @@ public:
 					short rowIndex_;
 					short colIndex_;
 					short XFRecordIndex_;
-					int value_;	
+					int64_t value_;
 				};
 
 				struct Formula : public Record
@@ -1095,12 +1102,12 @@ public:
 	YEOF eof_;
 };
 
-bool IsRKValueAnInteger(int rkValue);		///< Returns true if the supplied rk value contains an integer. 
-bool IsRKValueADouble(int rkValue);			///< Returns true if the supplied rk value contains a double.
-double GetDoubleFromRKValue(int rkValue);	///< Convert a rk value to a double.
-int GetIntegerFromRKValue(int rkValue);		///< Convert a rk value to an integer.
+bool IsRKValueAnInteger(int64_t rkValue);		///< Returns true if the supplied rk value contains an integer. 
+bool IsRKValueADouble(int64_t rkValue);			///< Returns true if the supplied rk value contains a double.
+double GetDoubleFromRKValue(int64_t rkValue);	///< Convert a rk value to a double.
+int64_t GetIntegerFromRKValue(int64_t rkValue);		///< Convert a rk value to an integer.
 int GetRKValueFromDouble(double value);		///< Convert a double to a rk value.
-int GetRKValueFromInteger(int value);		///< Convert an integer to a rk value.
+int64_t GetRKValueFromInteger(int64_t value);		///< Convert an integer to a rk value.
 bool CanStoreAsRKValue(double value);		///< Returns true if the supplied double can be stored as a rk value.
 
 // Forward declarations
@@ -1236,7 +1243,7 @@ public:
 	enum {UNDEFINED, INT32, INT64, DOUBLE, STRING, WSTRING};
 	int Type() const;		///< Get type of value stored in current Excel cell. Returns one of the above enums. 
 
-	bool Get(int& val) const;		///< Get an integer value. Returns false if cell does not contain an integer or a double.
+	bool Get(int64_t& val) const;		///< Get an integer value. Returns false if cell does not contain an integer or a double.
 	bool Get(double& val) const;	///< Get a double value. Returns false if cell does not contain a double or an integer.
 	bool Get(char* str) const;	///< Get an ANSI string. Returns false if cell does not contain an ANSI string.
 	bool Get(wchar_t* str) const;	///< Get an Unicode string. Returns false if cell does not contain an Unicode string.
@@ -1253,6 +1260,7 @@ public:
 	friend ostream& operator<<(ostream& os, const BasicExcelCell& cell);	///< Print cell to output stream. Print a null character if cell is undefined.
 
 	void Set(int val);				///< Set content of current Excel cell to an integer.
+	void Set(int64_t val);				///< Set content of current Excel cell to an integer.
 	void Set(double val);			///< Set content of current Excel cell to a double.
 	void Set(const char* str);		///< Set content of current Excel cell to an ANSI string.
 	void Set(const wchar_t* str);	///< Set content of current Excel cell to an Unicode string.
