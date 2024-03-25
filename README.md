@@ -24,6 +24,8 @@ BasicExcelCell从的字符串成员，从char和wchar改成了string和wsting
 如果单元格是一个字符串：BasicExcelCell的string VarStr和wstring ValWStr_中都会存一份，如果可以转成一个数值,int32、int64、double都会相应转换并写入
         
 如果单元格是一个数值：int32、int64、double都会写一份,同时也会转换成string和wstring再存一份
+
+写入中文字符串需要：Sheet0->Cell(Row, 1)->SetWString(BssicExcelUti::s2ws(utf8_to_ansi("中文").c_str()).c_str());
         
 所以不论如何,对一个BasicExcelCel取值，总是能取到
         
